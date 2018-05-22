@@ -1,7 +1,9 @@
 package nyc.c4q.yummyzzzaaaapp;
 
+import android.content.Intent;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
+import android.view.View;
 import android.view.ViewGroup;
 import android.support.v7.widget.CardView;
 import android.widget.ImageView;
@@ -12,6 +14,12 @@ public class CaptionedImageAdapter extends RecyclerView.Adapter<CaptionedImageAd
 
     private String [] captions;
     private int [] imageIds;
+    private Listener listener;
+
+    public static interface Listener {
+        public void onClick(int position);
+    }
+
 
     public static class ViewHolder extends RecyclerView.ViewHolder{
         private CardView cardView;
@@ -26,6 +34,10 @@ public class CaptionedImageAdapter extends RecyclerView.Adapter<CaptionedImageAd
         this.imageIds = imageIds;
     }
 
+    public void setListener(Listener listener) {
+        this.listener = listener;
+    }
+
     @Override
     public CaptionedImageAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         CardView cardView = (CardView) LayoutInflater.from(parent.getContext()).inflate(R.layout.card_captioned_image, parent, false);
@@ -33,13 +45,21 @@ public class CaptionedImageAdapter extends RecyclerView.Adapter<CaptionedImageAd
     }
 
     @Override
-    public void onBindViewHolder(ViewHolder holder, int position){
+    public void onBindViewHolder(ViewHolder holder, final int position){
         CardView cardView = holder.cardView;
         ImageView imageView = (ImageView) cardView.findViewById(R.id.description_image);
         Drawable drawable = cardView.getResources().getDrawable(imageIds[position]);
         imageView.setContentDescription(captions[position]);
         TextView textView = (TextView) cardView.findViewById(R.id.description_text);
         textView.setText(captions[position]);
+        cardView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(listener != null) {
+                    listener.onClick(position);
+                }
+            }
+        });
     }
 
     @Override
